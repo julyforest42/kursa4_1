@@ -29,6 +29,202 @@ struct List {
     struct Node* head;
 };
 
+// прототипи функцій
+void init_list(struct List* list);
+struct Node* create_node(struct Data data);
+void push_back(struct List* list, struct Data data);
+void add_node(struct List* list, int num, struct Data data);
+void erase_all(struct List* list);
+void erase_node(struct List* list, int num);
+void change_node(struct List* list, int num, struct Data data);
+void sort_list(struct List* list, int mode);
+void print_table(struct List* list, bool* p);
+void print_list(struct List* list);
+void print_node(struct List* list, int num);
+void find_name(struct List* list, char name[MAX]);
+void find_price(struct List* list, int mi, int ma);
+void find_term(struct List* list, int sup_term);
+int find_deliverer(struct List* list, char deliv[MAX]);
+bool confirm(char* prompt);
+int get_int(char* prompt, int min, int max);
+struct Data input_data();
+void save_list(struct List* list);
+void load_list(struct List* list);
+
+// основна програма
+int main() {
+    setlocale(LC_ALL, "urk");
+    puts("Програму виконав студент Ткачук С.С. групи АІ-244");
+    struct List list;
+    init_list(&list);
+    load_list(&list);
+    int num,q;
+    bool ans=false;
+    struct Data data;
+    while (!ans) {
+        printf("==============================================================\n");
+        printf("|                        МЕНЮ ПРОГРАМИ                       |\n");
+        printf("==============================================================\n");
+        printf("| 0. Вихід                                                   |\n");
+        printf("| 1. Додати елемент в кінець списку                          |\n");
+        printf("| 2. Додати елемент на місце заданої позиції                 |\n");
+        printf("| 3. Видалити елемент                                        |\n");
+        printf("| 4. Видалити всі елементи                                   |\n");
+        printf("| 5. Коригування даних                                       |\n");
+        printf("| 6. Вивести елемент                                         |\n");
+        printf("| 7. Вивести список                                          |\n");
+        printf("| 8. Сортувати список за кількістю (за зростанням)           |\n");
+        printf("| 9. Сортувати список за кількістю (за спаданням)            |\n");
+        printf("| 10. Знайти елементи по назві товару                        |\n");
+        printf("| 11. Знайти товари за роздрібною ціною у заданому діапазоні |\n");
+        printf("| 12. Знайти товари з терміном придатності нижче заданого    |\n");
+        printf("| 13. Знайти кількість товарів заданого постачальника        |\n");
+        printf("| 14. Зберегти зміни                                         |\n");
+        printf("| 15. Завантажити список                                     |\n");
+        printf("==============================================================\n");
+        q=get_int("Введіть запит: ",0,15);
+        switch (q) {
+            case 0:
+                ans=confirm("Ви впевені, що хочете завершити роботу програми? (y/n): ");
+                if (ans && confirm("Зберегти зміни списку? (y/n): ")) save_list(&list);
+                break;
+            case 1:
+                data=input_data();
+                push_back(&list,data);
+                printf("Елемент додано в кінець списку\n");
+                break;
+            case 2:
+                printf("Доступні позиції від 1 до %d\n",list.size+1);
+                num=get_int("Введіть позицію: ", 1, list.size+1);
+                data=input_data();
+                add_node(&list,num,data);
+                printf("Елемент додано на місце позиції %d\n",num);
+                break;
+            case 3:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого видаляти\n");
+                    break;
+                }
+                print_list(&list);
+                printf("Доступні вузли від 1 до %d\n",list.size);
+                num=get_int("Введіть номер вузла: ", 1, list.size);
+                if (confirm("Ви справді хочете видалити цей елемент? (y/n): ")) {
+                    erase_node(&list,num);
+                    printf("Елемент видалено\n");
+                }
+                else printf("Видалення скасовано\n");
+                break;
+            case 4:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого видаляти\n");
+                    break;
+                }
+                if (confirm("Ви справді хочете видалити всі елементи списку? (y/n): ")) {
+                    erase_all(&list);
+                    printf("Елементи видалено\n");
+                }
+                else printf("Видалення скасовано\n");
+                break;
+            case 5:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого змінювати\n");
+                    break;
+                }
+                print_list(&list);
+                printf("Доступні вузли від 1 до %d\n",list.size);
+                num=get_int("Введіть номер вузла: ", 1, list.size);
+                printf("\nСтарі дані:\n");
+                print_node(&list,num);
+                printf("\nНові дані:\n");
+                data=input_data();
+                change_node(&list,num,data);
+                break;
+            case 6:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого виводити\n");
+                    break;
+                }
+                printf("Доступні вузли від 1 до %d\n",list.size);
+                num=get_int("Введіть номер вузла: ", 1, list.size);
+                print_node(&list,num);
+                break;
+            case 7:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого виводити\n");
+                    break;
+                }
+                printf("Всього елементів: %d\n",list.size);
+                print_list(&list);
+                break;
+            case 8:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого сортувати\n");
+                    break;
+                }
+                printf("Відсортований список за зростанням:\n");
+                sort_list(&list,1);
+                break;
+            case 9:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого сортувати\n");
+                    break;
+                }
+                printf("Відсортований список за спаданням:\n");
+                sort_list(&list,2);
+                break;
+            case 10:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого знаходити\n");
+                    break;
+                }
+                char name[MAX];
+                printf("Найменування товару: ");
+                fgets(name, MAX, stdin); name[strcspn(name,"\n")]=0;
+                find_name(&list,name);
+                break;
+            case 11:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого знаходити\n");
+                    break;
+                }
+                int mi=get_int("Мінімальне значення: ",1,1000000000);
+                int ma=get_int("Максимальне значення: ",mi,1000000000);
+                find_price(&list,mi,ma);
+                break;
+            case 12:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого знаходити\n");
+                    break;
+                }
+                int sup_term=get_int("Верхня границя терміну придатності: ",2025,9999);
+                find_term(&list,sup_term);
+                break;
+            case 13:
+                if (list.size==0) {
+                    printf("Список порожній. Нічого знаходити\n");
+                    break;
+                }
+                char deliv[MAX];
+                printf("Назва постачальника: ");
+                fgets(deliv, MAX, stdin); deliv[strcspn(deliv,"\n")]=0;
+                int res=find_deliverer(&list,deliv);
+                printf("Кількість: %d\n",res);
+                break;
+            case 14:
+                save_list(&list);
+                break;
+            case 15:
+                load_list(&list);
+                break;
+        };
+        if (!ans) {
+            printf("\nНатисніть <Enter>, щоб продовжити: ");
+            getchar();
+        }
+    }
+    printf("Програма завершила свою роботу\n");
+}
+
 // ініціалізація списку
 void init_list(struct List* list) {
     list->size=0;
@@ -43,7 +239,7 @@ struct Node* create_node(struct Data data) {
     return new_node;
 }
 
-// додавання вузла за даними в кінець списку
+// додавання вузла в кінець списку
 void push_back(struct List* list, struct Data data) {
     if (list->head==NULL) {
         list->head=create_node(data);
@@ -94,10 +290,6 @@ void erase_all(struct List* list) {
 
 // видалення вузла за номером
 void erase_node(struct List* list, int num) {
-    if (num<1 || num>list->size) {
-        printf("Сталася помилка! Введіть коректні дані\n");
-        return;
-    }
     struct Node* curr=list->head;
     struct Node* tmp;
     if (num==1) {
@@ -120,10 +312,6 @@ void erase_node(struct List* list, int num) {
 
 // зміна даних вузла
 void change_node(struct List* list, int num, struct Data data) {
-    if (num<1 || num>list->size) {
-        printf("Сталася помилка! Введіть коректні дані\n");
-        return;
-    }
     struct Node* curr=list->head;
     int c=1;
     while (c<num) {
@@ -135,26 +323,23 @@ void change_node(struct List* list, int num, struct Data data) {
 
 // сортування списку за кількістю: режим 1 - за зростанням; режим 2 - за спаданням
 void sort_list(struct List* list, int mode) {
-    struct Node *a[list->size], *curr=list->head;
-    for (int i=0; i<list->size; i++) {
-        a[i]=curr;
-        curr=curr->next;
-    }
-    struct Node* i_ptr=a[0], *j_ptr, *op;
-    struct Data tmp;
-    while (i_ptr->next!=NULL) {
-        j_ptr=i_ptr->next;
-        op=i_ptr;
-        while (j_ptr!=NULL) {
-            if ((mode==1 && op->data.count>j_ptr->data.count) ||
-                (mode==2 && i_ptr->data.count<j_ptr->data.count)) op=j_ptr;
-            j_ptr=j_ptr->next;
+    int n=list->size, op;
+    struct Node** arr=malloc(sizeof(struct Node*)*n);
+    struct Node* curr=list->head, *tmp;
+    for (int i=0; i<n; i++) { arr[i]=curr; curr=curr->next; }
+    for (int i=0; i<n-1; i++) {
+        op=i;
+        for (int j=i+1; j<n; j++) {
+            if ((mode==1 && arr[op]->data.count>arr[j]->data.count) ||
+                (mode==2 && arr[op]->data.count<arr[j]->data.count)) op=j;
         }
-        tmp=i_ptr->data;
-        i_ptr->data=op->data;
-        op->data=tmp;
-        i_ptr=i_ptr->next;
+        tmp=arr[i]; arr[i]=arr[op]; arr[op]=tmp;
     }
+    struct List tmp_list;
+    init_list(&tmp_list);
+    for (int i=0; i<n; i++) push_back(&tmp_list, arr[i]->data);
+    print_list(&tmp_list);
+    free(arr);
 }
 
 // виведення списку у вигляді таблиці заданих елементів
@@ -200,17 +385,13 @@ void print_list(struct List* list) {
 
 // виведення вузла за номером
 void print_node(struct List* list, int num) {
-    if (num<1 || num>list->size) {
-        printf("Сталася помилка! Введіть коректні дані\n");
-        return;
-    }
     bool p[list->size];
     for (int i=0; i<list->size; i++) p[i]=false;
     p[num-1]=true;
     print_table(list, p);
 }
 
-// знайти елементи за назвою товару
+// знаходження елементів за назвою товару
 void find_name(struct List* list, char name[MAX]) {
     struct Node* curr=list->head;
     bool p[list->size];
@@ -224,7 +405,7 @@ void find_name(struct List* list, char name[MAX]) {
     print_table(list, p);
 }
 
-// знайти елементи за роздрібною ціною на проміжку
+// знаходження елементів за роздрібною ціною на проміжку
 void find_price(struct List* list, int mi, int ma) {
     struct Node* curr=list->head;
     bool p[list->size];
@@ -238,7 +419,7 @@ void find_price(struct List* list, int mi, int ma) {
     print_table(list, p);
 }
 
-// знайти елементи за терміном придатності нижче заданого
+// знаходження елементів за терміном придатності нижче заданого
 void find_term(struct List* list, int sup_term) {
     struct Node* curr=list->head;
     bool p[list->size];
@@ -252,7 +433,7 @@ void find_term(struct List* list, int sup_term) {
     print_table(list, p);
 }
 
-// знайти суму кількості товарів заданого постачальника
+// знаходження суми кількості товарів заданого постачальника
 int find_deliverer(struct List* list, char deliv[MAX]) {
     struct Node* curr=list->head;
     int c=1, sum=0;
@@ -266,6 +447,39 @@ int find_deliverer(struct List* list, char deliv[MAX]) {
     return sum;
 }
 
+// підтвердження (y/n)
+bool confirm(char* prompt) {
+    char str[MAX];
+    while (true) {
+        printf("%s",prompt);
+        fgets(str,sizeof(str),stdin); str[strcspn(str,"\n")]=0;
+        int n=strlen(str);
+        if (n==1 && (str[0]=='y' || str[0]=='Y')) return true;
+        if (n==1 && (str[0]=='n' || str[0]=='N')) return false;
+        printf("Відповідь не розпізнано. Спробуйте ще раз\n");
+    }
+    return false;
+}
+
+// введення та перевірка числа
+int get_int(char* prompt, int min, int max) {
+    int val;
+    char str[MAX];
+    while (true) {
+        printf("%s", prompt);
+        fgets(str, sizeof(str), stdin); str[strcspn(str,"\n")]=0;
+        if (sscanf(str, "%d", &val)!=1) {
+            printf("Невірний формат. Введіть число\n");
+            continue;
+        }
+        if (val<min || val>max) {
+            printf("Число повинно бути в діапазоні [%d..%d]\n", min, max);
+            continue;
+        }
+        return val;
+    }
+}
+
 // введення даних
 struct Data input_data() {
     struct Data data;
@@ -273,20 +487,16 @@ struct Data input_data() {
     fgets(data.product, MAX, stdin); data.product[strcspn(data.product,"\n")]=0;
     printf("Фірма виробник: ");
     fgets(data.company, MAX, stdin); data.company[strcspn(data.company,"\n")]=0;
-    printf("Термін придатності: ");
-    scanf("%d",&data.term); getchar();
-    printf("Ціна роздрібна: ");
-    scanf("%d",&data.retail_price); getchar();
-    printf("Кількість: ");
-    scanf("%d",&data.count); getchar();
+    data.term=get_int("Термін придатності: ", 2025, 9999);
+    data.retail_price=get_int("Ціна роздрібна: ", 1, 1000000000);
+    data.count=get_int("Кількість: ", 1, 1000000000);
     printf("Постачальник: ");
     fgets(data.deliverer, MAX, stdin); data.deliverer[strcspn(data.deliverer,"\n")]=0;
-    printf("Закупівельна ціна: ");
-    scanf("%d",&data.purchase_price); getchar();
+    data.purchase_price=get_int("Закупівельна роздрібна: ", 1, 1000000000);
     return data;
 };
 
-// зберегти список до файлу
+// збереження списку до файлу
 void save_list(struct List* list) {
     FILE *f;
     if ((f=fopen("save.dat","wb"))==NULL) {
@@ -301,7 +511,7 @@ void save_list(struct List* list) {
     fclose(f);
 }
 
-// завантажити список з файлу
+// завантаження списку з файлу
 void load_list(struct List* list) {
     FILE *f;
     if ((f=fopen("save.dat","rb"))==NULL) {
@@ -315,141 +525,4 @@ void load_list(struct List* list) {
     }
     printf("Список оновлено\n");
     fclose(f);
-}
-
-// основна програма
-int main() {
-    setlocale(LC_ALL, "urk");
-    puts("Програму виконав студент Ткачук С.С. групи АІ-244");
-    struct List list;
-    init_list(&list);
-    load_list(&list);
-    int num,q;
-    char ans='n',save;
-    struct Data data;
-    while (ans!='y') {
-        printf("=============================================================\n");
-        printf("| Введіть запит:                                            |\n");
-        printf("| 0. Зберегти зміни                                         |\n");
-        printf("| 1. Додати елемент в кінець списку                         |\n");
-        printf("| 2. Додати елемент на місце заданої позиції                |\n");
-        printf("| 3. Видалити елемент                                       |\n");
-        printf("| 4. Коригування даних                                      |\n");
-        printf("| 5. Вивести елемент                                        |\n");
-        printf("| 6. Вивести список                                         |\n");
-        printf("| 7. Сортувати список за кількістю (за зростанням)          |\n");
-        printf("| 8. Сортувати список за кількістю (за спаданням)           |\n");
-        printf("| 9. Знайти елементи по назві товару                        |\n");
-        printf("| 10. Знайти товари за родрібною ціною у заданому діапазоні |\n");
-        printf("| 11. Знайти товари з терміном придатності нижче заданого   |\n");
-        printf("| 12. Знайти кількість товарів заданого постачальника       |\n");
-        printf("| 13. Видалити всі елементи                                 |\n");
-        printf("| 14. Завантажити список з файлу save.dat                   |\n");
-        printf("| 15. Вихід                                                 |\n");
-        printf("=============================================================\n:");
-        scanf("%d",&q); getchar();
-        switch (q) {
-            case 0:
-                save_list(&list);
-                break;
-            case 1:
-                data=input_data();
-                push_back(&list,data);
-                break;
-            case 2:
-                printf("Виберіть номер вузла (1-%d): ",list.size+1);
-                scanf("%d",&num); getchar();
-                if (num<1 || num>list.size+1) {
-                    printf("Сталася помилка! Введіть коректні дані\n");
-                    break;
-                }
-                data=input_data();
-                add_node(&list,num,data);
-                break;
-            case 3:
-                print_list(&list);
-                printf("Виберіть номер вузла: ");
-                scanf("%d",&num); getchar();
-                erase_node(&list,num);
-                break;
-            case 4:
-                print_list(&list);
-                printf("\nВиберіть номер вузла: ");
-                scanf("%d",&num); getchar();
-                printf("\nСтарі дані:\n");
-                print_node(&list,num);
-                printf("\nНові дані:\n");
-                data=input_data();
-                change_node(&list,num,data);
-                break;
-            case 5:
-                printf("Виберіть номер вузла (всього %d): ",list.size);
-                scanf("%d",&num); getchar();
-                print_node(&list,num);
-                break;
-            case 6:
-                printf("Всього елементів: %d\n",list.size);
-                print_list(&list);
-                break;
-            case 7:
-                sort_list(&list,1);
-                printf("Список відсортовано за зростанням.\n");
-                break;
-            case 8:
-                sort_list(&list,2);
-                printf("Список відсортовано за спаданням.\n");
-                break;
-            case 9:
-                char name[MAX];
-                printf("Найменування товару: ");
-                fgets(name, MAX, stdin); name[strcspn(name,"\n")]=0;
-                find_name(&list,name);
-                break;
-            case 10:
-                int mi,ma;
-                printf("Мінімальне значення: ");
-                scanf("%d",&mi); getchar();
-                printf("Максимальне значення: ");
-                scanf("%d",&ma); getchar();
-                find_price(&list,mi,ma);
-                break;
-            case 11:
-                int sup_term;
-                printf("Верхня границя терміну придатності: ");
-                scanf("%d",&sup_term); getchar();
-                find_term(&list,sup_term);
-                break;
-            case 12:
-                char deliv[MAX];
-                printf("Назва постачальника: ");
-                fgets(deliv, MAX, stdin); deliv[strcspn(deliv,"\n")]=0;
-                int res=find_deliverer(&list,deliv);
-                printf("Кількість: %d\n",res);
-                break;
-            case 13:
-                erase_all(&list);
-                printf("Всі елементи було видалено\n");
-                break;
-            case 14:
-                load_list(&list);
-                break;
-            case 15:
-                printf("Ви впевені, що хочете завершити роботу програми? (y/n): ");
-                scanf("%c",&ans); getchar();
-                if (ans=='y') {
-                    printf("Зберегти зміни списку? (y/n): ");
-                    scanf("%c",&save); getchar();
-                    if (save=='y') save_list(&list);
-                }
-                break;
-            default:
-                printf("Невірний запит! Спробуйте ще раз\n");
-                break;
-        };
-        if (ans!='y') {
-            printf("\nНатисніть <Enter>, щоб продовжити: ");
-            getchar();
-        }
-    }
-    printf("Програма завершила свою роботу\n");
 }
